@@ -25,43 +25,26 @@
 #define CAN_ON
 
 // INPUT PINS DEFINITIONS
-#define     DEAD_MAN_SWITCH         PD4
-#define     ON_OFF_SWITCH           PD5
 #define     SWITCHES_PORT           PORTD
 #define     SWITCHES_PIN            PIND
 #define     SWITCHES_DDR            DDRD
-#define     FAULT_PORT              PORTD
-#define     FAULT_PIN               PIND
-#define     FAULT_DDR               DDRD
-#define     FAULT                   PD3
+#define     PUMP1_ON_SWITCH         PD2
+#define     PUMP2_ON_SWITCH         PD3
+#define     PUMP3_ON_SWITCH         PD4
+#define     DMS                     PD5
+#define     MOTOR_ON_SWITCH         PD6
+#define     MPPT_ON_SWITCH          PD7
 
 // OUTPUT PINS DEFINITIONS
-#define     PWM_PORT                PORTB
-#define     PWM_PIN                 PINB
-#define     PWM_DDR                 DDRB
-#define     PWM                     PB1
-#define     LED_PORT                PORTC
-#define     LED_PIN                 PINC
-#define     LED_DDR                 DDRC
-#define     LED                     PC5
+#define     LED_PORT                PORTB
+#define     LED_PIN                 PINB
+#define     LED_DDR                 DDRB
+#define     LED                     PB0
 
 #define     cpl_led()               cpl_bit(LED_PORT, LED);
 #define     set_led()               set_bit(LED_PORT, LED);
 #define     clr_led()               clr_bit(LED_PORT, LED);
 
-// PWM DEFINITIONS
-#define INITIAL_D                   0   //!< float value from 0 to 1
-#define PWM_D_DELTA                 1   //!< amount to increase
-#define PWM_D_MAX_DELTA             2   //!< clock divisor
-#define PWM_D_MIN                   0   //!< minimum D
-#define PWM_D_MAX                   640 //!< maximum D
-#define PWM_D_MIN_THRESHHOLD        6   //!< minimum D threshhold
-#define PWM_D_MAX_THRESHHOLD        636 //!< maximum D threshhold
-#define PWM_D_LIN_MULT              5   //!< this is A for D = (D*A) >> B
-#define PWM_D_LIN_DIV               1   //!< this is B for D = (D*A) >> B
-
-// tempo em que o potenciometro deve ficar zerado para que seja permitido ligar 
-#define MIN_ZERO_WIDTH_TIMES        10     
 // number of checks before reset the pwm fault counter.
 #define CHECKS_BEFORE_RESET_FAULT_COUNTER 100
 // maximum of consecutive faults before state an error

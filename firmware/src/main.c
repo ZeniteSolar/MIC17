@@ -10,20 +10,6 @@
 volatile uint8_t CTRL_CLK = 0;       // CLOCK de controle (frequencia definida pelo timer2)
 
 /**
- * @brief configura o PWM usando o timer TC1
- */
-void pwm_init()
-{
-    // configuracao do Timer TC1 --> TIMER DO PWM
-	TCCR1A = 0b10100010;                            // modo PWM com fase corrigida, valor TOP = ICR1(registrador),   --> OBS: alterar bits DDRx do OC1A
-	TCCR1B = 0b00010001;                            // prescaler = 1
-    //Equacao para Frequencia do PWM:       ICR1 = (f_osc)/(2*f_pwm);
-	ICR1   = 640;                                   // valor TOP para f_pwm = 12 KHz
-	OCR1A  = INITIAL_D;                             // D = %*ICR1
-    
-}
-
-/**
  * @brief configuracao do timer TC2  --> Timer de controle, timer2
  */
 void ctrl_init()
@@ -48,19 +34,23 @@ inline static void setup(void)
 {
 
     // configuracao dos pinos I/O
-    set_bit(PWM_DDR, PWM);                      // PWM como saida
     set_bit(LED_DDR, LED);                      // LED como saída
-    clr_bit(SWITCHES_DDR, DEAD_MAN_SWITCH);     // DEADMAN como entrada
-    set_bit(SWITCHES_PORT, DEAD_MAN_SWITCH);    // DEADMAN com pull-up
-    clr_bit(SWITCHES_DDR, ON_OFF_SWITCH);       // ON/OFF como entrada
-    set_bit(SWITCHES_PORT, ON_OFF_SWITCH);      // ON/OFF com pull-up
-    set_bit(FAULT_PORT, FAULT);                 // FAULT com pull-up
-
+    clr_bit(SWITCHES_DDR, DMS);                 // DEADMAN como entrada
+    set_bit(SWITCHES_PORT, DMS);                // DEADMAN com pull-up
+    clr_bit(SWITCHES_DDR, MOTOR_ON_SWITCH);     // MOTOR ON como entrada
+    set_bit(SWITCHES_PORT, MOTOR_ON_SWITCH);    // MOTOR ON com pull-up
+    clr_bit(SWITCHES_DDR, MPPT_ON_SWITCH);      // MPPT ON como entrada
+    set_bit(SWITCHES_PORT, MPPT_ON_SWITCH);     // MPPT ON com pull-up
+    clr_bit(SWITCHES_DDR, PUMP1_ON_SWITCH);     // PUMP1 como entrada
+    set_bit(SWITCHES_PORT, PUMP1_ON_SWITCH);    // PUMP1 com pull-up
+    clr_bit(SWITCHES_DDR, PUMP2_ON_SWITCH);     // PUMP2 como entrada
+    set_bit(SWITCHES_PORT, PUMP2_ON_SWITCH);    // PUMP2 com pull-up
+    clr_bit(SWITCHES_DDR, PUMP3_ON_SWITCH);     // PUMP3 como entrada
+    set_bit(SWITCHES_PORT, PUMP3_ON_SWITCH);    // PUMP3 com pull-up
 
     // Configuracoes da interrupcao externa para as chaves e a interrupcao externa por FAULT (IR2127)
     set_bit(PCMSK2, PCINT20);                   // DEADMAN com interrupcao
     set_bit(PCMSK2, PCINT21);                   // ON/OFF com interrupcao
-    set_bit(PCMSK2, PCINT19);                   // FAULT (IR2127)
     set_bit(PCICR, PCIE2);                      // enables external interrupts for PCINT23~16
     set_bit(PCIFR, PCIF2);                      // clears external interrupt requests for PCINT23~16
 
@@ -72,10 +62,6 @@ inline static void setup(void)
 
 #ifdef ADC_ON
     adc_init();
-#endif
-
-#ifdef PWM_ON
-    pwm_init();
 #endif
 
 #ifdef CTRL_ON
