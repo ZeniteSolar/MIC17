@@ -33,6 +33,12 @@ void ctrl_init()
 inline static void setup(void)
 {
 
+#ifdef USART_ON
+    usart_init(MYUBRR,1,1);                         // inicializa a usart
+	VERBOSE_MSG(usart_send_string("\n\n\nUSART... OK!\n"));
+#endif
+
+	VERBOSE_MSG(usart_send_string("I/O's..."));
     // configuracao dos pinos I/O
     set_bit(LED_DDR, LED);                      // LED como saída
     clr_bit(SWITCHES_DDR, DMS);                 // DEADMAN como entrada
@@ -47,44 +53,55 @@ inline static void setup(void)
     set_bit(SWITCHES_PORT, PUMP2_ON_SWITCH);    // PUMP2 com pull-up
     clr_bit(SWITCHES_DDR, PUMP3_ON_SWITCH);     // PUMP3 como entrada
     set_bit(SWITCHES_PORT, PUMP3_ON_SWITCH);    // PUMP3 com pull-up
+ 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 
+	VERBOSE_MSG(usart_send_string("External Interrupts..."));
     // Configuracoes da interrupcao externa para as chaves e a interrupcao externa por FAULT (IR2127)
     set_bit(PCMSK2, PCINT20);                   // DEADMAN com interrupcao
     set_bit(PCMSK2, PCINT21);                   // ON/OFF com interrupcao
     set_bit(PCICR, PCIE2);                      // enables external interrupts for PCINT23~16
     set_bit(PCIFR, PCIF2);                      // clears external interrupt requests for PCINT23~16
-
+	 VERBOSE_MSG(usart_send_string(" OK!\n"));
 
 #ifdef DEBUG_ON
+	VERBOSE_MSG(usart_send_string("Debug I/O's..."));
     set_bit(DDRB, PB5);
     set_bit(DDRB, PB4);
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif 
 
 #ifdef ADC_ON
+	VERBOSE_MSG(usart_send_string("ADC..."));
     adc_init();
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
 #ifdef CTRL_ON
+	VERBOSE_MSG(usart_send_string("CTRL..."));
 	ctrl_init();
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
-#ifdef USART_ON
-    usart_init(MYUBRR,1,1);                         // inicializa a usart
+#ifdef SLEEP_ON 
+	VERBOSE_MSG(usart_send_string("SLEEP..."));
+    set_sleep_mode(SLEEP_MODE_IDLE);                // configura sleep com o modo IDLE
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
+#endif
+    
+#ifdef CAN_ON
+	VERBOSE_MSG(usart_send_string("CAN (125kbps)..."));
+    can_init(BITRATE_125_KBPS);
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
+	VERBOSE_MSG(usart_send_string("CAN filters..."));
+    can_static_filter(can_filter);
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
 #ifdef WATCHDOG_ON
     wdt_init();
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
-
-#ifdef SLEEP_ON 
-    set_sleep_mode(SLEEP_MODE_IDLE);                // configura sleep com o modo IDLE
-#endif
-    
-#ifdef CAN_ON
-    can_init(BITRATE_125_KBPS);
-    can_static_filter(can_filter);
-#endif
-
+ 
 	sei();				                            // liga a chave geral das interrupcoes
 
 }
@@ -100,11 +117,6 @@ int main(void)
 
     setup();
 
-    VERBOSE_MSG(usart_send_string("Hi! I am the PMDC Chopper version 2017 and I am here to serve you.\n"));
-    VERBOSE_MSG(usart_send_string("If you are receiving this message it means that all the peripherals was sucessyfully initialized.\n"));
-    VERBOSE_MSG(usart_send_string("I will start my machine state right now. The first stage is called INITIALIZING STATE and it checks if this system is safe and able to correctly operate.\n"));
-    VERBOSE_MSG(usart_send_string("...\n"));
-   
     for(;;){
 
         wdt_reset();                                // checkpoint: reset watchdog timer

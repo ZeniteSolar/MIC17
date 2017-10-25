@@ -12,16 +12,7 @@
  */
 inline void check_switches(void)
 {
-    VERBOSE_MSG(usart_send_string("Motor Switch: "));
-    if(bit_is_clear(SWITCHES_PIN, MOTOR_ON_SWITCH)){
-        VERBOSE_MSG(usart_send_string("On.  "));
-        system_flags.motor_on = 1;
-    }else{
-        VERBOSE_MSG(usart_send_string("Off. "));
-        system_flags.motor_on = 0;
-    }
-    
-    VERBOSE_MSG(usart_send_string("Deadman' Switch: "));
+    VERBOSE_MSG(usart_send_string("DMS: "));
     if(bit_is_set(SWITCHES_PIN, DMS)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.dms = 1;   
@@ -29,8 +20,17 @@ inline void check_switches(void)
         VERBOSE_MSG(usart_send_string("Off. "));
         system_flags.dms = 0;   
     }
+ 
+    VERBOSE_MSG(usart_send_string("Motor: "));
+    if(bit_is_clear(SWITCHES_PIN, MOTOR_ON_SWITCH)){
+        VERBOSE_MSG(usart_send_string("On.  "));
+        system_flags.motor_on = 1;
+    }else{
+        VERBOSE_MSG(usart_send_string("Off. "));
+        system_flags.motor_on = 0;
+    }
 
-    VERBOSE_MSG(usart_send_string("MPPT Switch: "));
+    VERBOSE_MSG(usart_send_string("MPPT: "));
     if(bit_is_set(SWITCHES_PIN, MPPT_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.mppt_on = 1;   
@@ -39,7 +39,7 @@ inline void check_switches(void)
         system_flags.mppt_on = 0;   
     } 
 
-    VERBOSE_MSG(usart_send_string("Pump 1' Switch: "));
+    VERBOSE_MSG(usart_send_string("Pump 1: "));
     if(bit_is_set(SWITCHES_PIN, PUMP1_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump1_on = 1;   
@@ -48,7 +48,7 @@ inline void check_switches(void)
         system_flags.pump1_on = 0;   
     }
 
-    VERBOSE_MSG(usart_send_string("Pump 2' Switch: "));
+    VERBOSE_MSG(usart_send_string("Pump 2: "));
     if(bit_is_set(SWITCHES_PIN, PUMP2_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump2_on = 1;   
@@ -57,7 +57,7 @@ inline void check_switches(void)
         system_flags.pump2_on = 0;   
     }
     
-    VERBOSE_MSG(usart_send_string("Pump 3' Switch: "));
+    VERBOSE_MSG(usart_send_string("Pump 3: "));
     if(bit_is_set(SWITCHES_PIN, PUMP3_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump3_on = 1;   
@@ -65,7 +65,7 @@ inline void check_switches(void)
         VERBOSE_MSG(usart_send_string("Off. "));
         system_flags.pump3_on = 0;   
     }
-    
+    VERBOSE_MSG(usart_send_char('\n'));
 }
 
 /**
@@ -119,7 +119,7 @@ inline void task_initializing(void)
 
     if(!error_flags.all){
         VERBOSE_MSG(usart_send_string("System initialized without errors.\n"));
-        set_state_initializing();
+        set_state_running();
     }
     else{
         VERBOSE_MSG(usart_send_string("Sorry. I have have found errors in the initialilation process. \n\nI will begin to process it...\n"));
