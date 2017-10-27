@@ -7,7 +7,9 @@ inline void can_app_print_msg(can_t *msg)
 {
 	usart_send_string("ID: ");
 	usart_send_uint16(msg->id);
-	usart_send_string(". Data: ");
+    usart_send_string(" L: ");
+    usart_send_uint16(msg->length);
+	usart_send_string(". D: ");
 
 	for(uint8_t i = 0; i < msg->length; i++){
 	    usart_send_uint16(msg->data[i]);
@@ -15,8 +17,10 @@ inline void can_app_print_msg(can_t *msg)
 	}
 
 	usart_send_string(". ERR: ");
-	
-//	usart_send_uint16(can_msg_err);
+	can_error_register_t err = can_read_error_register();
+	usart_send_uint16(err.rx);
+	usart_send_char(' ');
+	usart_send_uint16(err.tx);
 	usart_send_char('\n');
 }
 
@@ -26,20 +30,56 @@ inline void can_app_print_msg(can_t *msg)
 inline void can_app_task(void)
 {
     check_can();
-    can_app_send_state();
+
+    if(can_app_send_state_clk_div++ >= CAN_APP_SEND_STATE_CLK_DIV){
+        can_app_send_state_clk_div = 0;
+        VERBOSE_MSG(usart_send_string("state msg was sent.\n"));
+        can_app_send_state();
+    }
+
+    if(can_app_send_motor_clk_div++ >= CAN_APP_SEND_MOTOR_CLK_DIV){
+        can_app_send_motor_clk_div = 0;
+        VERBOSE_MSG(usart_send_string("motor msg was sent.\n"));
+        can_app_send_motor();
+    }
 }
 
 inline void can_app_send_state(void)
 {
     can_t msg;
-    msg.id                                  = CAN_FILTER_MSG_AC17_STATE;
+
+    msg.id                                  = CAN_FILTER_MSG_MIC17_STATE;
     msg.length                              = CAN_LENGTH_MSG_STATE;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
     msg.data[CAN_STATE_MSG_STATE_BYTE]      = (uint8_t) state_machine;
     msg.data[CAN_STATE_MSG_ERROR_BYTE]      = error_flags.all;
 
+    can_app_print_msg(&msg);
     can_send_message(&msg);
+}
+
+inline void can_app_send_motor(void)
+{
+    can_t msg;
+
+    msg.id                                  = CAN_FILTER_MSG_MIC17_MOTOR;
+    msg.length                              = CAN_LENGTH_MSG_MIC17_MOTOR;
+
+    for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
+
+    msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
+    msg.data[CAN_MSG_MIC17_MOTOR_D_RAW_BYTE]    = control.D_raw_target;
+    msg.data[CAN_MSG_MIC17_MOTOR_I_RAW_BYTE]    = control.I_raw_target;
+
+    msg.data[CAN_MSG_MIC17_MOTOR_MOTOR_ON_BYTE] |= 
+        ((system_flags.motor_on) << CAN_MSG_MIC17_MOTOR_MOTOR_ON_BIT);
+
+    msg.data[CAN_MSG_MIC17_MOTOR_DMS_BYTE] |= 
+        ((system_flags.dms) << CAN_MSG_MIC17_MOTOR_DMS_BIT);
+
+    can_app_print_msg(&msg);
+    can_send_message(&msg); 
 }
 
 /**

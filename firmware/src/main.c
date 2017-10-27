@@ -102,7 +102,7 @@ inline static void setup(void)
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
  
-	sei();				                            // liga a chave geral das interrupcoes
+   sei();				                            // liga a chave geral das interrupcoes
 
 }
 

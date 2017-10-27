@@ -10,7 +10,7 @@
 /**
  * @brief checks if the switches updating system flags
  */
-inline void check_switches(void)
+void check_switches(void)
 {
     VERBOSE_MSG(usart_send_string("DMS: "));
     if(bit_is_set(SWITCHES_PIN, DMS)){
