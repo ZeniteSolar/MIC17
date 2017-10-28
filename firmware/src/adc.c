@@ -6,6 +6,8 @@
 void init_buffers(void)
 {
     CBUF_Init(cbuf_adc0);
+    CBUF_Init(cbuf_adc1);
+    CBUF_Init(cbuf_adc2);
 }
 
 /**
@@ -23,6 +25,40 @@ uint8_t ma_adc0(void)
     }
     avg_adc0 = sum >> cbuf_adc0_SIZE_2;
     return avg_adc0;
+}
+
+/**
+* @brief computes the average of a given adc channel
+*
+* Ma = (1/N)*Summation of x[i] from i=0 to N, 
+* if N = 2^k, then Ma = (Summation of x[i] from i=0 to N) >> k
+*
+*/
+uint8_t ma_adc1(void)
+{   
+    uint16_t sum = 0;
+    for(uint8_t i = cbuf_adc1_SIZE; i; i--){
+        sum += CBUF_Get(cbuf_adc1, i);
+    }
+    avg_adc1 = sum >> cbuf_adc1_SIZE_2;
+    return avg_adc1;
+}
+
+/**
+* @brief computes the average of a given adc channel 
+*
+* Ma = (1/N)*Summation of x[i] from i=0 to N, 
+* if N = 2^k, then Ma = (Summation of x[i] from i=0 to N) >> k
+*
+*/
+uint8_t ma_adc2(void)
+{   
+    uint16_t sum = 0;
+    for(uint8_t i = cbuf_adc2_SIZE; i; i--){
+        sum += CBUF_Get(cbuf_adc2, i);
+    }
+    avg_adc2 = sum >> cbuf_adc2_SIZE_2;
+    return avg_adc2;
 }
 
 /**
@@ -72,7 +108,7 @@ void adc_init(void)
             | (0 << CS01)
             | (0 << CS00);
 
-	OCR0A  =    207;                                    // Valor para igualdade de comparacao A para frequencia de 150 Hz
+	OCR0A  =    20;                                    // Valor para igualdade de comparacao A para frequencia de ~1500 Hz
     TIMSK0 |=   (1 << OCIE0A);                        // Ativa a interrupcao na igualdade de comparação do TC0 com OCR0A
 
 }
@@ -81,13 +117,20 @@ void adc_init(void)
  * @brief MUX do ADC
  */
 ISR(ADC_vect){
-    //raw_adc[ADC_CHANNEL] = ADCH;                  // utilizando o raw
-    CBUF_Push(cbuf_adc0, ADCH);                     // utilizando a media
-
-    //VERBOSE_MSG(usart_send_char(ADC_CHANNEL));   
-    
-    // TODO: TESTAR O MUX:
-    //if(++ADC_CHANNEL > ADC_LAST_CHANNEL) ADC_CHANNEL = ADC0;
+    switch (ADC_CHANNEL++) {
+        case ADC0:
+            CBUF_Push(cbuf_adc0, ADCH); 
+            break;
+        case ADC1:
+            CBUF_Push(cbuf_adc1, ADCH); 
+            break;
+        case ADC2:
+            CBUF_Push(cbuf_adc2, ADCH);
+            //break;
+        default:
+            ADC_CHANNEL = ADC0;             // recycles
+            break;
+    }
 }
  
 /**
