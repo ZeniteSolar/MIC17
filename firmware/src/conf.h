@@ -12,8 +12,8 @@
 
 // CONFIGURACOES DE COMPILACAO
 //#define DEBUG_ON
-#define VERBOSE_ON
-#define VERBOSE0_ON
+//#define VERBOSE_ON
+//#define VERBOSE0_ON
 
 // MODULES ACTIVATION
 #define ADC_ON
@@ -22,7 +22,7 @@
 #define CTRL_ON
 #define SLEEP_ON
 #define WATCHDOG_ON
-//#define CAN_ON
+#define CAN_ON
 
 // INPUT PINS DEFINITIONS
 #define     SWITCHES_PORT           PORTD

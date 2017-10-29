@@ -29,13 +29,13 @@ inline void can_app_print_msg(can_t *msg)
 */
 inline void can_app_task(void)
 {
-    check_can();
+    //check_can();
 
-    if(can_app_send_state_clk_div++ >= CAN_APP_SEND_STATE_CLK_DIV){
+    /*if(can_app_send_state_clk_div++ >= CAN_APP_SEND_STATE_CLK_DIV){
         can_app_send_state_clk_div = 0;
         VERBOSE_MSG(usart_send_string("state msg was sent.\n"));
         can_app_send_state();
-    }
+    }*/
 
     if(can_app_send_motor_clk_div++ >= CAN_APP_SEND_MOTOR_CLK_DIV){
         can_app_send_motor_clk_div = 0;
