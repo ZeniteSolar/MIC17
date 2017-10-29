@@ -17,8 +17,10 @@
 #include "adc.h"
 #include "usart.h"
 #include "dbg_vrb.h"
+#ifdef CAN_ON
 #include "can.h"
 #include "can_app.h"
+#endif
 
 typedef enum state_machine{
     STATE_INITIALIZING,
@@ -47,8 +49,9 @@ typedef union error_flags{
 }error_flags_t;
 
 typedef struct control{
-    uint8_t     D_raw_target;   // value for target pwm, from 0 to 255
-    uint8_t     I_raw_target;   // value for target pwm, from 0 to 255
+    uint8_t     motor_D_raw_target;   // value for target pwm, from 0 to 255
+    uint8_t     motor_I_raw_target;   // value for target pwm, from 0 to 255
+    uint8_t     mppts_I_raw_target;   // value for target pwm, from 0 to 255
 }control_t;
 
 control_t control;
@@ -63,6 +66,7 @@ void task_running(void);
 void task_error(void);
 
 // the machine itself
+void machine_init(void);
 void machine_run(void);
 void set_state_error(void);
 void set_state_initializing(void);
@@ -73,11 +77,13 @@ state_machine_t state_machine;
 system_flags_t system_flags;
 error_flags_t error_flags;
 uint8_t total_errors;   // Contagem de ERROS
+volatile uint8_t machine_clk;
 
 // other variables
 uint8_t led_clk_div;
 
+ISR(TIMER2_COMPA_vect);
+
 // externs
-//extern uint8_t total_errors;
 
 #endif /* ifndef _MACHINE_H_ */

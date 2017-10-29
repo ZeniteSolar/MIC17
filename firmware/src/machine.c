@@ -8,6 +8,24 @@
  */
 
 /**
+ * @brief 
+ */
+void machine_init(void)
+{
+    TCCR2A  =   (1 << WGM21) | (0 << WGM20)         // Timer 2 in Mode 2 = CTC (clear on compar  e)
+            | (0 << COM2A1) | (0 << COM2A0)         // do nothing with OC2A
+            | (0 << COM2B1) | (0 << COM2B0);        // do nothing with OC2B
+    TCCR2B  =   (0 << WGM22)                        // Timer 0 in Mode 2 = CTC (clear on compar  e)
+            | (0 << FOC0A) | (0 << FOC0B)           // dont force outputs
+            | (1 << CS02)                           // clock enabled, prescaller = 1024
+            | (1 << CS01)
+            | (1 << CS00);
+    OCR2A   =   222;                                // Valor para igualdade de comparacao A par  a frequencia de 35 Hz
+    TIMSK2 |=   (1 << OCIE2A);                      // Ativa a interrupcao na igualdade de comp  aração do TC2 com OCR2A
+
+}
+
+/**
  * @brief checks if the switches updating system flags
  */
 void check_switches(void)
@@ -75,6 +93,11 @@ inline void check_buffers(void)
 {
     VERBOSE_MSG(usart_send_string("Checking buffers..."));
     while(!CBUF_IsFull(cbuf_adc0));
+    VERBOSE_MSG(usart_send_string(" \t\t0...\n")); 
+    while(!CBUF_IsFull(cbuf_adc1));
+    VERBOSE_MSG(usart_send_string(" \t\t1...\n")); 
+    while(!CBUF_IsFull(cbuf_adc2));
+    VERBOSE_MSG(usart_send_string(" \t\t2...\n")); 
     VERBOSE_MSG(usart_send_string(" \t\tdone.\n")); 
 }
 
@@ -114,8 +137,13 @@ inline void task_initializing(void)
 {
     set_led();
 
+#ifdef CAN_ON
     check_can();
-    //check_buffers();
+#endif
+
+#ifdef ADC_ON
+    check_buffers();
+#endif
 
     if(!error_flags.all){
         VERBOSE_MSG(usart_send_string("System initialized without errors.\n"));
@@ -138,8 +166,21 @@ inline void task_running(void)
     }
 
     check_switches();
+    
+    control.motor_D_raw_target = ma_adc0();
+    control.motor_I_raw_target = ma_adc1();
+    control.mppts_I_raw_target = ma_adc2();
+    VERBOSE_MSG(usart_send_string(" ADC0(D) :"));
+    VERBOSE_MSG(usart_send_uint16(control.motor_D_raw_target));
+    VERBOSE_MSG(usart_send_string(" ADC1(I) :"));
+    VERBOSE_MSG(usart_send_uint16(control.motor_I_raw_target));
+    VERBOSE_MSG(usart_send_string(" ADC2(I) :"));
+    VERBOSE_MSG(usart_send_uint16(control.mppts_I_raw_target));
+    VERBOSE_MSG(usart_send_char(' '));
 
+#ifdef CAN_ON
     can_app_task();
+#endif
 
 }
 
@@ -184,21 +225,23 @@ inline void task_error(void)
 inline void machine_run(void)
 {
 
-    
-    switch(state_machine){
-        case STATE_INITIALIZING:
-            task_initializing();
+    if(machine_clk){
+        machine_clk = 0;
+        switch(state_machine){
+            case STATE_INITIALIZING:
+                task_initializing();
 
-            break;
-        case STATE_RUNNING:
-            task_running();
+                break;
+            case STATE_RUNNING:
+                task_running();
 
-            break;
-        case STATE_ERROR:
-            task_error();
+                break;
+            case STATE_ERROR:
+                task_error();
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 }
 
@@ -213,5 +256,13 @@ ISR(PCINT2_vect)
     }
 
     DEBUG1;
+}
+
+/**
+* @brief ISR para ações de controle
+*/
+ISR(TIMER2_COMPA_vect)
+{
+	machine_clk = 1;
 }
 

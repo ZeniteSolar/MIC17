@@ -17,6 +17,7 @@
 #include "dbg_vrb.h"
 #include "../lib/cbuf.h"
 #include "../lib/log2.h"
+#include "usart.h"
 
 #define ADC_LAST_CHANNEL 3                  //*< quantity of channels used
 
@@ -25,7 +26,7 @@ typedef volatile enum adc_channels{
 } adc_channels_t;                           //*< the adc_channel type 
 static adc_channels_t ADC_CHANNEL = ADC0;   //*< current chosen adc channel
 
-void adc_select_channel(adc_channels_t __ch);
+uint8_t adc_select_channel(adc_channels_t __ch);
 void adc_init(void);
 
 // MOVING AVERAGE BELOW //

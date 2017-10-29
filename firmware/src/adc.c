@@ -63,11 +63,14 @@ uint8_t ma_adc2(void)
 
 /**
  * @brief Muda o canal do adc
+ * @param __ch is the channel to be switched to
+ * @return return the selected channel
  */
-void adc_select_channel(adc_channels_t __ch)
+uint8_t adc_select_channel(adc_channels_t __ch)
 {
     ADC_CHANNEL = __ch;
     ADMUX = (ADMUX & 0xF8) | ADC_CHANNEL; // clears the bottom 3 bits before ORing
+    return ADC_CHANNEL;
 }
 
 /**
@@ -117,12 +120,14 @@ void adc_init(void)
  * @brief MUX do ADC
  */
 ISR(ADC_vect){
-    switch (ADC_CHANNEL++) {
+    switch(ADC_CHANNEL){
         case ADC0:
             CBUF_Push(cbuf_adc0, ADCH); 
+            ADC_CHANNEL++;
             break;
         case ADC1:
             CBUF_Push(cbuf_adc1, ADCH); 
+            ADC_CHANNEL++;
             break;
         case ADC2:
             CBUF_Push(cbuf_adc2, ADCH);
@@ -130,7 +135,8 @@ ISR(ADC_vect){
         default:
             ADC_CHANNEL = ADC0;             // recycles
             break;
-    }
+    }        
+    adc_select_channel(ADC_CHANNEL);
 }
  
 /**
