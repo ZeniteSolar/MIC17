@@ -20,7 +20,7 @@
 #define CAN_SIGNATURE_MIC17             243
 #define CAN_SIGNATURE_AC17              244
 
-#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_AC17
+#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MIC17
 
 // MESSGES FROM MIC17:
 #define CAN_MASK_MIC17                  0b11111111111   //<! Mask for MIC17

@@ -5,27 +5,6 @@
  */
 
 #include "main.h"
-#include "can_filters.h"
-
-volatile uint8_t CTRL_CLK = 0;       // CLOCK de controle (frequencia definida pelo timer2)
-
-/**
- * @brief configuracao do timer TC2  --> Timer de controle, timer2
- */
-void ctrl_init()
-{
-	TCCR2A  =   (1 << WGM21) | (0 << WGM20)			// Timer 2 in Mode 2 = CTC (clear on compare)
-			| (0 << COM2A1) | (0 << COM2A0)			// do nothing with OC2A
-			| (0 << COM2B1) | (0 << COM2B0);		// do nothing with OC2B
-	TCCR2B  =   (0 << WGM22)                        // Timer 0 in Mode 2 = CTC (clear on compare)
-            | (0 << FOC0A) | (0 << FOC0B)           // dont force outputs
-            | (1 << CS02)			                // clock enabled, prescaller = 1024
-			| (1 << CS01) 
-            | (1 << CS00);			                 
-	OCR2A   =   222;			                    // Valor para igualdade de comparacao A para frequencia de 35 Hz
-	TIMSK2 |=   (1 << OCIE2A);                      // Ativa a interrupcao na igualdade de comparação do TC2 com OCR2A
-}    
- 
 
 /**
  * @brief configura os periféricos
@@ -37,6 +16,15 @@ inline static void setup(void)
     usart_init(MYUBRR,1,1);                         // inicializa a usart
 	VERBOSE_MSG(usart_send_string("\n\n\nUSART... OK!\n"));
 #endif
+
+#ifdef CAN_ON
+	VERBOSE_MSG(usart_send_string("CAN (125kbps)..."));
+    can_init(BITRATE_125_KBPS);
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
+	VERBOSE_MSG(usart_send_string("CAN filters..."));
+    can_static_filter(can_filter);
+	VERBOSE_MSG(usart_send_string(" OK!\n"));
+#endif 
 
 	VERBOSE_MSG(usart_send_string("I/O's..."));
     // configuracao dos pinos I/O
@@ -55,13 +43,15 @@ inline static void setup(void)
     set_bit(SWITCHES_PORT, PUMP3_ON_SWITCH);    // PUMP3 com pull-up
  	VERBOSE_MSG(usart_send_string(" OK!\n"));
 
-	VERBOSE_MSG(usart_send_string("External Interrupts..."));
+/*	
+ 	VERBOSE_MSG(usart_send_string("External Interrupts..."));
     // Configuracoes da interrupcao externa para as chaves e a interrupcao externa por FAULT (IR2127)
     set_bit(PCMSK2, PCINT20);                   // DEADMAN com interrupcao
     set_bit(PCMSK2, PCINT21);                   // ON/OFF com interrupcao
     set_bit(PCICR, PCIE2);                      // enables external interrupts for PCINT23~16
     set_bit(PCIFR, PCIF2);                      // clears external interrupt requests for PCINT23~16
 	 VERBOSE_MSG(usart_send_string(" OK!\n"));
+     */
 
 #ifdef DEBUG_ON
 	VERBOSE_MSG(usart_send_string("Debug I/O's..."));
@@ -76,28 +66,20 @@ inline static void setup(void)
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
-#ifdef CTRL_ON
-	VERBOSE_MSG(usart_send_string("CTRL..."));
-	ctrl_init();
+#ifdef MACHINE_ON
+	VERBOSE_MSG(usart_send_string("MACHINE..."));
+	machine_init();
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
 #ifdef SLEEP_ON 
 	VERBOSE_MSG(usart_send_string("SLEEP..."));
-    set_sleep_mode(SLEEP_MODE_IDLE);                // configura sleep com o modo IDLE
-	VERBOSE_MSG(usart_send_string(" OK!\n"));
-#endif
-    
-#ifdef CAN_ON
-	VERBOSE_MSG(usart_send_string("CAN (125kbps)..."));
-    can_init(BITRATE_125_KBPS);
-	VERBOSE_MSG(usart_send_string(" OK!\n"));
-	VERBOSE_MSG(usart_send_string("CAN filters..."));
-    can_static_filter(can_filter);
+    sleep_init();
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
 
 #ifdef WATCHDOG_ON
+	VERBOSE_MSG(usart_send_string("WATCHDOG..."));
     wdt_init();
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 #endif
@@ -112,34 +94,27 @@ inline static void setup(void)
  */
 int main(void)
 {
-    system_flags.all = error_flags.all = 0;
-    state_machine = STATE_INITIALIZING;
+    #ifdef MACHINE_ON
+        system_flags.all = error_flags.all = 0;
+        state_machine = STATE_INITIALIZING;
+    #endif
 
     setup();
 
     for(;;){
+        #ifdef WATCHDOG_ON
+            wdt_reset();                                // checkpoint: reset watchdog timer
+        #endif
 
-        wdt_reset();                                // checkpoint: reset watchdog timer
-
-        // Main Task runs at CTRL_CLK frequency (defined by TIMER2)
-		if(CTRL_CLK) {
+        #ifdef MACHINE_ON
             machine_run();
-            CTRL_CLK = 0;
-        }
-   
-#ifdef SLEEP_ON 
-        sleep_mode();           // entra em modo IDLE até a próxima interrupção
-#endif
+        #endif
+
+        #ifdef SLEEP_ON 
+            sleep_mode();           // entra em modo IDLE até a próxima interrupção
+        #endif
 
     }
-}
-
-/**
- * @brief ISR para ações de controle
- */
-ISR(TIMER2_COMPA_vect)
-{
-    CTRL_CLK = 1;
 }
 
 /**

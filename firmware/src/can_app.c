@@ -69,8 +69,8 @@ inline void can_app_send_motor(void)
     for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
-    msg.data[CAN_MSG_MIC17_MOTOR_D_RAW_BYTE]    = control.D_raw_target;
-    msg.data[CAN_MSG_MIC17_MOTOR_I_RAW_BYTE]    = control.I_raw_target;
+    msg.data[CAN_MSG_MIC17_MOTOR_D_RAW_BYTE]    = control.motor_D_raw_target;
+    msg.data[CAN_MSG_MIC17_MOTOR_I_RAW_BYTE]    = control.motor_I_raw_target;
 
     msg.data[CAN_MSG_MIC17_MOTOR_MOTOR_ON_BYTE] |= 
         ((system_flags.motor_on) << CAN_MSG_MIC17_MOTOR_MOTOR_ON_BIT);

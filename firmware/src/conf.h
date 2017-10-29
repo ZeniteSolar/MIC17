@@ -13,16 +13,16 @@
 // CONFIGURACOES DE COMPILACAO
 //#define DEBUG_ON
 #define VERBOSE_ON
+#define VERBOSE0_ON
 
 // MODULES ACTIVATION
 #define ADC_ON
 #define USART_ON
-#define PWM_ON
-#define CTRL_ON
 #define MACHINE_ON                  // this one is absolutly necessary
+#define CTRL_ON
 #define SLEEP_ON
 #define WATCHDOG_ON
-#define CAN_ON
+//#define CAN_ON
 
 // INPUT PINS DEFINITIONS
 #define     SWITCHES_PORT           PORTD
@@ -41,9 +41,9 @@
 #define     LED_DDR                 DDRB
 #define     LED                     PB0
 
-#define     cpl_led()               cpl_bit(LED_PORT, LED);
-#define     set_led()               set_bit(LED_PORT, LED);
-#define     clr_led()               clr_bit(LED_PORT, LED);
+#define     cpl_led()               cpl_bit(LED_PORT, LED)
+#define     set_led()               set_bit(LED_PORT, LED)
+#define     clr_led()               clr_bit(LED_PORT, LED)
 
 // number of checks before reset the pwm fault counter.
 #define CHECKS_BEFORE_RESET_FAULT_COUNTER 100
