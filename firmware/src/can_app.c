@@ -103,7 +103,7 @@ inline void can_app_send_pumps(void)
     can_send_message(&msg); 
 }
 
-inline void can_app_send_MPPTS(void)
+inline void can_app_send_mppts(void)
 {
     can_t msg;
 
@@ -122,6 +122,24 @@ inline void can_app_send_MPPTS(void)
     can_app_print_msg(&msg);
     can_send_message(&msg); 
 }
+
+inline void can_app_send_mcs(void)
+{
+    can_t msg;
+
+    msg.id                                  = CAN_FILTER_MSG_MIC17_PUMPS;
+    msg.length                              = CAN_LENGTH_MSG_MIC17_PUMPS;
+
+    for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
+
+    msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
+
+    msg.data[CAN_MSG_MIC17_MCS_BOAT_ON_BYTE] |= 
+        ((system_flags.boat_on) << CAN_MSG_MIC17_MCS_BOAT_ON_BIT);
+     
+    can_app_print_msg(&msg);
+    can_send_message(&msg); 
+} 
 
 /**
  * @brief redirects a specific message extractor to a given message
