@@ -37,6 +37,7 @@ typedef union system_flags{
         uint8_t     dms             :1;
         uint8_t     motor_on        :1;
         uint8_t     mppt_on         :1;
+        uint8_t     boat_on         :1;
     };
     uint8_t   all;
 } system_flags_t;
