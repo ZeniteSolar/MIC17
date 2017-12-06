@@ -18,7 +18,7 @@
 
 // SIGNATURES
 #define CAN_SIGNATURE_MIC17             243
-#define CAN_SIGNATURE_AC17              244
+#define CAN_SIGNATURE_MAM17             244
 
 #define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MIC17
 
@@ -54,17 +54,17 @@
 #define CAN_MSG_MIC17_MCS_BOAT_ON_BIT       0
 
 
-// MESSAGES FROM AC17:
-#define CAN_MASK_AC17                   0b11111111111   //<! Mask for AC17
-#define CAN_FILTER_MSG_AC17_STATE       0b00001000000   //<! Informs about state and errors
-#define CAN_FILTER_MSG_AC17_MOTOR       0b00001000001   //<! Informs about motor
-#define CAN_LENGTH_MSG_AC17_MOTOR       6
-// AC17 MOTOR:
-#define CAN_MSG_AC17_MOTOR_D_BYTE       1
-#define CAN_MSG_AC17_MOTOR_V_BYTE       2
-#define CAN_MSG_AC17_MOTOR_I_BYTE       3
-#define CAN_MSG_AC17_MOTOR_R_BYTE       4
-#define CAN_MSG_AC17_MOTOR_T_BYTE       5
+// MESSAGES FROM MAM17:
+#define CAN_MASK_MAM17                   0b11111111111   //<! Mask for MAM17
+#define CAN_FILTER_MSG_MAM17_STATE       0b00001000000   //<! Informs about state and errors
+#define CAN_FILTER_MSG_MAM17_MOTOR       0b00001000001   //<! Informs about motor
+#define CAN_LENGTH_MSG_MAM17_MOTOR       6
+// MAM17 MOTOR:
+#define CAN_MSG_MAM17_MOTOR_D_BYTE       1
+#define CAN_MSG_MAM17_MOTOR_V_BYTE       2
+#define CAN_MSG_MAM17_MOTOR_I_BYTE       3
+#define CAN_MSG_MAM17_MOTOR_R_BYTE       4
+#define CAN_MSG_MAM17_MOTOR_T_BYTE       5
 
 // MESSAGES FROM MAB17
 #define CAN_MASK_MAB17                  0b11111111111   //<! Mask for MAB17

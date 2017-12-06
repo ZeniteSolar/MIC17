@@ -114,7 +114,7 @@ inline void can_app_send_mppts(void)
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
 
-    msg.data[CAN_MSG_MIC17_MPPTS_POT_BYTE]    = control.mppts_I_raw_target;
+    msg.data[CAN_MSG_MIC17_MPPTS_POT_BYTE]  = control.mppts_I_raw_target;
 
     msg.data[CAN_MSG_MIC17_MPPTS_MPPTS_ON_BYTE] |= 
         ((system_flags.mppt_on) << CAN_MSG_MIC17_MPPTS_MPPTS_ON_BIT);
