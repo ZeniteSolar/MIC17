@@ -92,12 +92,12 @@ inline void can_app_send_pumps(void)
     for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
-    msg.data[CAN_MSG_MIC17_PUMPS_PUMP1_BYTE]    |= 
+    msg.data[CAN_MSG_MIC17_PUMPS_PUMPS_BYTE]    |= 
         ((system_flags.pump1_on) << CAN_MSG_MIC17_PUMPS_PUMP1_BIT);
-    msg.data[CAN_MSG_MIC17_PUMPS_PUMP2_BYTE]    |= 
+    msg.data[CAN_MSG_MIC17_PUMPS_PUMPS_BYTE]    |= 
         ((system_flags.pump2_on) << CAN_MSG_MIC17_PUMPS_PUMP2_BIT);
-    msg.data[CAN_MSG_MIC17_PUMPS_PUMP3_BYTE]    |= 
-        ((system_flags.pump3_on) << CAN_MSG_MIC17_PUMPS_PUMP2_BIT);
+    msg.data[CAN_MSG_MIC17_PUMPS_PUMPS_BYTE]    |= 
+        ((system_flags.pump3_on) << CAN_MSG_MIC17_PUMPS_PUMP3_BIT);
 
     can_app_print_msg(&msg);
     can_send_message(&msg); 
