@@ -17,9 +17,11 @@ inline static void setup(void)
 	VERBOSE_MSG(usart_send_string("\n\n\nUSART... OK!\n"));
 #endif
 
+    _delay_ms(1000);
+
 #ifdef CAN_ON
 	VERBOSE_MSG(usart_send_string("CAN (125kbps)..."));
-    can_init(BITRATE_125_KBPS);
+    can_init(BITRATE_500_KBPS);
 	VERBOSE_MSG(usart_send_string(" OK!\n"));
 	VERBOSE_MSG(usart_send_string("CAN filters..."));
     can_static_filter(can_filter);
