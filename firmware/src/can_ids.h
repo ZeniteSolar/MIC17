@@ -28,6 +28,7 @@
 #define CAN_FILTER_MSG_MIC17_MOTOR      0b00000100001   //<! Informs about motor controls.
 #define CAN_FILTER_MSG_MIC17_PUMPS      0b00000100010   //<! Informs about pumps controls.
 #define CAN_FILTER_MSG_MIC17_MPPTS      0b00000100011   //<! Informs about mppts controls.
+#define CAN_FILTER_MSG_MIC17_MCS        0b00000100100   //<! Informs about boat_on to mcs.
 // MIC17 MOTOR:
 #define CAN_LENGTH_MSG_MIC17_MOTOR          4
 #define CAN_MSG_MIC17_MOTOR_MOTOR_ON_BYTE   1
@@ -43,10 +44,14 @@
 #define CAN_MSG_MIC17_PUMPS_PUMP2_BIT       1
 #define CAN_MSG_MIC17_PUMPS_PUMP3_BIT       2
 // MIC17 MPPTS:
-#define CAN_LENGTH_MSG_MIC17_MPPTS          2
+#define CAN_LENGTH_MSG_MIC17_MPPTS          3
 #define CAN_MSG_MIC17_MPPTS_MPPTS_ON_BYTE   1
 #define CAN_MSG_MIC17_MPPTS_MPPTS_ON_BIT    0
 #define CAN_MSG_MIC17_MPPTS_POT_BYTE        2
+// MIC17 MCS:
+#define CAN_LENGHT_MSG_MIC17_MCS            2
+#define CAN_MSG_MIC17_MCS_BOAT_ON_BYTE      1
+#define CAN_MSG_MIC17_MCS_BOAT_ON_BIT       0
 
 
 // MESSAGES FROM AC17:
