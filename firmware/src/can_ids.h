@@ -76,7 +76,6 @@
 #define CAN_MASK_MAM17                  0b11111111111   //<! Mask for MAM17
 #define CAN_FILTER_MSG_MAM17_STATE      0b00000010000   //<! Informs about state and errors
 #define CAN_FILTER_MSG_MAM17_MOTOR      0b00000010001   //<! Informs about motor
-#define CAN_LENGTH_MSG_MAM17_MOTOR      6
 
 // MAM17 MOTOR:
 #define CAN_LENGTH_MSG_MAM17_MOTOR      3
