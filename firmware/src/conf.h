@@ -12,8 +12,8 @@
 
 // CONFIGURACOES DE COMPILACAO
 //#define DEBUG_ON
-//#define VERBOSE_ON
-//#define VERBOSE0_ON
+#define VERBOSE_ON
+#define VERBOSE0_ON
 
 // MODULES ACTIVATION
 #define ADC_ON
@@ -25,21 +25,30 @@
 #define CAN_ON
 
 // INPUT PINS DEFINITIONS
-#define     SWITCHES_PORT           PORTD
-#define     SWITCHES_PIN            PIND
-#define     SWITCHES_DDR            DDRD
+#define     PUMPS_SWITCHES_PORT     PORTD
+#define     PUMPS_SWITCHES_PIN      PIND
+#define     PUMPS_SWITCHES_DDR      DDRD
 #define     PUMP1_ON_SWITCH         PD2
 #define     PUMP2_ON_SWITCH         PD3
 #define     PUMP3_ON_SWITCH         PD4
+
+#define     DMS_PORT                PORTD
+#define     DMS_PIN                 PIND
+#define     DMS_DDR                 DDRD
 #define     DMS                     PD5
-#define     MOTOR_ON_SWITCH         PD6
-#define     MPPT_ON_SWITCH          PD7
+
+#define     CTRL_SWITCHES_PORT      PORTC
+#define     CTRL_SWITCHES_PIN       PINC
+#define     CTRL_SWITCHES_DDR       DDRC
+#define     BOAT_ON_SWITCH          PC3
+#define     MOTOR_ON_SWITCH         PC4
+#define     MPPT_ON_SWITCH          PC5
 
 // OUTPUT PINS DEFINITIONS
-#define     LED_PORT                PORTB
-#define     LED_PIN                 PINB
-#define     LED_DDR                 DDRB
-#define     LED                     PB0
+#define     LED_PORT                PORTD
+#define     LED_PIN                 PIND
+#define     LED_DDR                 DDRD
+#define     LED                     PD6
 
 #define     cpl_led()               cpl_bit(LED_PORT, LED)
 #define     set_led()               set_bit(LED_PORT, LED)

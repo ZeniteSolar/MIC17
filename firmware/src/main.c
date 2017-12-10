@@ -31,18 +31,20 @@ inline static void setup(void)
 	VERBOSE_MSG(usart_send_string("I/O's..."));
     // configuracao dos pinos I/O
     set_bit(LED_DDR, LED);                      // LED como saída
-    clr_bit(SWITCHES_DDR, DMS);                 // DEADMAN como entrada
-    set_bit(SWITCHES_PORT, DMS);                // DEADMAN com pull-up
-    clr_bit(SWITCHES_DDR, MOTOR_ON_SWITCH);     // MOTOR ON como entrada
-    set_bit(SWITCHES_PORT, MOTOR_ON_SWITCH);    // MOTOR ON com pull-up
-    clr_bit(SWITCHES_DDR, MPPT_ON_SWITCH);      // MPPT ON como entrada
-    set_bit(SWITCHES_PORT, MPPT_ON_SWITCH);     // MPPT ON com pull-up
-    clr_bit(SWITCHES_DDR, PUMP1_ON_SWITCH);     // PUMP1 como entrada
-    set_bit(SWITCHES_PORT, PUMP1_ON_SWITCH);    // PUMP1 com pull-up
-    clr_bit(SWITCHES_DDR, PUMP2_ON_SWITCH);     // PUMP2 como entrada
-    set_bit(SWITCHES_PORT, PUMP2_ON_SWITCH);    // PUMP2 com pull-up
-    clr_bit(SWITCHES_DDR, PUMP3_ON_SWITCH);     // PUMP3 como entrada
-    set_bit(SWITCHES_PORT, PUMP3_ON_SWITCH);    // PUMP3 com pull-up
+    clr_bit(DMS_DDR, DMS);                 // DEADMAN como entrada
+    set_bit(DMS_PORT, DMS);                // DEADMAN com pull-up
+    clr_bit(CTRL_SWITCHES_DDR, BOAT_ON_SWITCH);      // BOAT ON como entrada
+    set_bit(CTRL_SWITCHES_PORT, BOAT_ON_SWITCH);     // BOAT ON com pull-up
+    clr_bit(CTRL_SWITCHES_DDR, MOTOR_ON_SWITCH);     // MOTOR ON como entrada
+    set_bit(CTRL_SWITCHES_PORT, MOTOR_ON_SWITCH);    // MOTOR ON com pull-up
+    clr_bit(CTRL_SWITCHES_DDR, MPPT_ON_SWITCH);      // MPPT ON como entrada
+    set_bit(CTRL_SWITCHES_PORT, MPPT_ON_SWITCH);     // MPPT ON com pull-up
+    clr_bit(PUMPS_SWITCHES_DDR, PUMP1_ON_SWITCH);     // PUMP1 como entrada
+    set_bit(PUMPS_SWITCHES_PORT, PUMP1_ON_SWITCH);    // PUMP1 com pull-up
+    clr_bit(PUMPS_SWITCHES_DDR, PUMP2_ON_SWITCH);     // PUMP2 como entrada
+    set_bit(PUMPS_SWITCHES_PORT, PUMP2_ON_SWITCH);    // PUMP2 com pull-up
+    clr_bit(PUMPS_SWITCHES_DDR, PUMP3_ON_SWITCH);     // PUMP3 como entrada
+    set_bit(PUMPS_SWITCHES_PORT, PUMP3_ON_SWITCH);    // PUMP3 com pull-up
  	VERBOSE_MSG(usart_send_string(" OK!\n"));
 
 /*	

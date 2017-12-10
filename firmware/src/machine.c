@@ -31,7 +31,7 @@ void machine_init(void)
 void check_switches(void)
 {
     VERBOSE_MSG(usart_send_string("DMS: "));
-    if(bit_is_set(SWITCHES_PIN, DMS)){
+    if(bit_is_set(DMS_PIN, DMS)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.dms = 1;   
     }else{
@@ -39,8 +39,17 @@ void check_switches(void)
         system_flags.dms = 0;   
     }
  
+    VERBOSE_MSG(usart_send_string("BOAT: "));
+    if(bit_is_set(CTRL_SWITCHES_PIN, BOAT_ON_SWITCH)){
+        VERBOSE_MSG(usart_send_string("On.  "));
+        system_flags.dms = 1;   
+    }else{
+        VERBOSE_MSG(usart_send_string("Off. "));
+        system_flags.dms = 0;   
+    }
+
     VERBOSE_MSG(usart_send_string("Motor: "));
-    if(bit_is_clear(SWITCHES_PIN, MOTOR_ON_SWITCH)){
+    if(bit_is_clear(CTRL_SWITCHES_PIN, MOTOR_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.motor_on = 1;
     }else{
@@ -49,7 +58,7 @@ void check_switches(void)
     }
 
     VERBOSE_MSG(usart_send_string("MPPT: "));
-    if(bit_is_set(SWITCHES_PIN, MPPT_ON_SWITCH)){
+    if(bit_is_set(CTRL_SWITCHES_PIN, MPPT_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.mppt_on = 1;   
     }else{
@@ -58,7 +67,7 @@ void check_switches(void)
     } 
 
     VERBOSE_MSG(usart_send_string("Pump 1: "));
-    if(bit_is_set(SWITCHES_PIN, PUMP1_ON_SWITCH)){
+    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP1_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump1_on = 1;   
     }else{
@@ -67,7 +76,7 @@ void check_switches(void)
     }
 
     VERBOSE_MSG(usart_send_string("Pump 2: "));
-    if(bit_is_set(SWITCHES_PIN, PUMP2_ON_SWITCH)){
+    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP2_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump2_on = 1;   
     }else{
@@ -76,7 +85,7 @@ void check_switches(void)
     }
     
     VERBOSE_MSG(usart_send_string("Pump 3: "));
-    if(bit_is_set(SWITCHES_PIN, PUMP3_ON_SWITCH)){
+    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP3_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump3_on = 1;   
     }else{
@@ -250,8 +259,8 @@ inline void machine_run(void)
  */
 ISR(PCINT2_vect)
 {    
-    if(bit_is_set(SWITCHES_PIN, MOTOR_ON_SWITCH)
-            || bit_is_clear(SWITCHES_PIN, DMS)){
+    if(bit_is_set(CTRL_SWITCHES_PIN, MOTOR_ON_SWITCH)
+            || bit_is_clear(DMS_PIN, DMS)){
         set_state_initializing();
     }
 
