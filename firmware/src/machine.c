@@ -40,7 +40,7 @@ void check_switches(void)
     }
  
     VERBOSE_MSG(usart_send_string("BOAT: "));
-    if(bit_is_set(CTRL_SWITCHES_PIN, BOAT_ON_SWITCH)){
+    if(bit_is_clear(CTRL_SWITCHES_PIN, BOAT_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.dms = 1;   
     }else{
@@ -58,7 +58,7 @@ void check_switches(void)
     }
 
     VERBOSE_MSG(usart_send_string("MPPT: "));
-    if(bit_is_set(CTRL_SWITCHES_PIN, MPPT_ON_SWITCH)){
+    if(bit_is_clear(CTRL_SWITCHES_PIN, MPPT_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.mppt_on = 1;   
     }else{
@@ -67,7 +67,7 @@ void check_switches(void)
     } 
 
     VERBOSE_MSG(usart_send_string("Pump 1: "));
-    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP1_ON_SWITCH)){
+    if(bit_is_clear(PUMPS_SWITCHES_PIN, PUMP1_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump1_on = 1;   
     }else{
@@ -76,7 +76,7 @@ void check_switches(void)
     }
 
     VERBOSE_MSG(usart_send_string("Pump 2: "));
-    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP2_ON_SWITCH)){
+    if(bit_is_clear(PUMPS_SWITCHES_PIN, PUMP2_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump2_on = 1;   
     }else{
@@ -85,7 +85,7 @@ void check_switches(void)
     }
     
     VERBOSE_MSG(usart_send_string("Pump 3: "));
-    if(bit_is_set(PUMPS_SWITCHES_PIN, PUMP3_ON_SWITCH)){
+    if(bit_is_clear(PUMPS_SWITCHES_PIN, PUMP3_ON_SWITCH)){
         VERBOSE_MSG(usart_send_string("On.  "));
         system_flags.pump3_on = 1;   
     }else{
@@ -174,6 +174,14 @@ inline void task_running(void)
         led_clk_div = 0;
     }
 
+    if(buzzer_clk_div++ == 0){
+        set_buzzer();
+    }else if(buzzer_clk_div >= 2){
+        clr_buzzer();
+    }else if(buzzer_clk_div >= buzzer_max){
+        buzzer_clk_div = 0;
+    }
+
     check_switches();
     
     control.motor_D_raw_target = ma_adc0();
@@ -198,6 +206,7 @@ inline void task_running(void)
  */
 inline void task_error(void)
 {
+    cpl_buzzer();
     if(led_clk_div++ >= 5){
         cpl_led();
         led_clk_div = 0;
@@ -223,7 +232,8 @@ inline void task_error(void)
         for(;;);    // waits the watchdog to reset.
     }
     
-    cpl_led();
+    clr_led();
+    cpl_buzzer();
     set_state_initializing();
 }
 

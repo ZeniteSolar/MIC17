@@ -83,6 +83,9 @@ volatile uint8_t machine_clk;
 // other variables
 uint8_t led_clk_div;
 
+uint8_t buzzer_clk_div;
+#define buzzer_max       110      // defines the frequency for bip (running)
+
 ISR(TIMER2_COMPA_vect);
 
 // externs
