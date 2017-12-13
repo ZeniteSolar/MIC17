@@ -78,10 +78,11 @@ uint8_t adc_select_channel(adc_channels_t __ch)
  */
 void adc_init(void)
 {
+
     // configuracao do ADC
     PORTC   =   0b00000000;                         // pull-up for adcs
     DDRC    =   0b00000000;                         // all adcs as inputs
-    DIDR0   =   0b11111111;                         // All ADC Pin is disabled for digital use.
+    DIDR0   =   0b00000111;                         // ADC0 to ADC2 as adc (digital disable)
 
     ADMUX   =   (0 << REFS1)                        // AVcc with external capacitor at AREF pin
             | (1 << REFS0)
@@ -103,7 +104,7 @@ void adc_init(void)
 
     // configuracao do Timer TC0 --> TIMER DO ADC
     TCCR0A  =   (1 << WGM01) | (0 << WGM00)         // Timer 0 in Mode 2 = CTC (clear on compare)
-            | (0 << COM0A1) | (1 << COM0A0)         // Toggle OC0A on Compare Match
+            | (0 << COM0A1) | (0 << COM0A0)         // Normal port operation
             | (0 << COM0B1) | (0 << COM0B0);        // do nothing with OC0B
     TCCR0B  =   (0 << WGM02)                        // Timer 0 in Mode 2 = CTC (clear on compare)
             | (0 << FOC0A) | (0 << FOC0B)           // dont force outputs
@@ -111,8 +112,8 @@ void adc_init(void)
             | (0 << CS01)
             | (0 << CS00);
 
-	OCR0A  =    20;                                    // Valor para igualdade de comparacao A para frequencia de ~1500 Hz
-    TIMSK0 |=   (1 << OCIE0A);                        // Ativa a interrupcao na igualdade de comparação do TC0 com OCR0A
+	OCR0A  =    20;                                 // Valor para igualdade de comparacao A para frequencia de ~1500 Hz
+    TIMSK0 |=   (1 << OCIE0A);                      // Ativa a interrupcao na igualdade de comparação do TC0 com OCR0A
 
 }
 
