@@ -31,17 +31,36 @@ inline void can_app_task(void)
 {
     //check_can();
 
-    /*if(can_app_send_state_clk_div++ >= CAN_APP_SEND_STATE_CLK_DIV){
+    if(can_app_send_state_clk_div++ >= CAN_APP_SEND_STATE_CLK_DIV){
         can_app_send_state_clk_div = 0;
         VERBOSE_MSG(usart_send_string("state msg was sent.\n"));
         can_app_send_state();
-    }*/
+    }
 
     if(can_app_send_motor_clk_div++ >= CAN_APP_SEND_MOTOR_CLK_DIV){
         can_app_send_motor_clk_div = 0;
         VERBOSE_MSG(usart_send_string("motor msg was sent.\n"));
         can_app_send_motor();
     }
+
+    if(can_app_send_pumps_clk_div++ >= CAN_APP_SEND_PUMPS_CLK_DIV){
+        can_app_send_pumps_clk_div = 0;
+        VERBOSE_MSG(usart_send_string("pumps msg was sent.\n"));
+        can_app_send_pumps();
+    }
+
+    if(can_app_send_mcs_clk_div++ >= CAN_APP_SEND_MCS_CLK_DIV){
+        can_app_send_mcs_clk_div = 0;
+        VERBOSE_MSG(usart_send_string("mcs msg was sent.\n"));
+        can_app_send_mcs();
+    }
+
+    if(can_app_send_mppts_clk_div++ >= CAN_APP_SEND_MPPTS_CLK_DIV){
+        can_app_send_mppts_clk_div = 0;
+        VERBOSE_MSG(usart_send_string("mppts msg was sent.\n"));
+        can_app_send_mppts();
+    }
+
 }
 
 inline void can_app_send_state(void)
@@ -107,8 +126,8 @@ inline void can_app_send_mppts(void)
 {
     can_t msg;
 
-    msg.id                                  = CAN_FILTER_MSG_MIC17_PUMPS;
-    msg.length                              = CAN_LENGTH_MSG_MIC17_PUMPS;
+    msg.id                                  = CAN_FILTER_MSG_MIC17_MPPTS;
+    msg.length                              = CAN_LENGTH_MSG_MIC17_MPPTS;
 
     for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
@@ -127,8 +146,8 @@ inline void can_app_send_mcs(void)
 {
     can_t msg;
 
-    msg.id                                  = CAN_FILTER_MSG_MIC17_PUMPS;
-    msg.length                              = CAN_LENGTH_MSG_MIC17_PUMPS;
+    msg.id                                  = CAN_FILTER_MSG_MIC17_MCS;
+    msg.length                              = CAN_LENGTH_MSG_MIC17_MCS;
 
     for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
