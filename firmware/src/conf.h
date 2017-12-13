@@ -13,7 +13,7 @@
 // CONFIGURACOES DE COMPILACAO
 //#define DEBUG_ON
 #define VERBOSE_ON
-#define VERBOSE0_ON
+//#define VERBOSE0_ON
 
 // MODULES ACTIVATION
 #define ADC_ON
@@ -49,10 +49,18 @@
 #define     LED_PIN                 PIND
 #define     LED_DDR                 DDRD
 #define     LED                     PD6
-
 #define     cpl_led()               cpl_bit(LED_PORT, LED)
 #define     set_led()               set_bit(LED_PORT, LED)
 #define     clr_led()               clr_bit(LED_PORT, LED)
+
+#define     BUZZER_PORT             PORTD
+#define     BUZZER_PIN              PIND
+#define     BUZZER_DDR              DDRD
+#define     BUZZER                  PD7
+#define     cpl_buzzer()            cpl_bit(BUZZER_PORT, BUZZER)
+#define     set_buzzer()            set_bit(BUZZER_PORT, BUZZER)
+#define     clr_buzzer()            clr_bit(BUZZER_PORT, BUZZER)
+
 
 // number of checks before reset the pwm fault counter.
 #define CHECKS_BEFORE_RESET_FAULT_COUNTER 100
