@@ -7,23 +7,30 @@
  *
  */
 
-#ifndef _CONF_H_
-#define _CONF_H_
+#ifndef CONF_H
+#define CONF_H
 
 // CONFIGURACOES DE COMPILACAO
 //#define DEBUG_ON
-#define VERBOSE_ON
-//#define VERBOSE0_ON
+//#define VERBOSE_ON
+//#define VERBOSE_ON_CAN_APP
+#define VERBOSE_ON_MACHINE
+//#define VERBOSE_ON_ADC
+#define VERBOSE_ON_INIT
+#define VERBOSE_ON_ERROR
+//#define CAN_PRINT_MSG
+
+// TESTS
+ 
 
 // MODULES ACTIVATION
-#define ADC_ON
 #define USART_ON
-#define MACHINE_ON                  // this one is absolutly necessary
-#define CTRL_ON
-#define SLEEP_ON
-#define WATCHDOG_ON
 #define CAN_ON
-
+#define ADC_ON
+#define MACHINE_ON
+#define WATCHDOG_ON
+#define SLEEP_ON
+ 
 // INPUT PINS DEFINITIONS
 #define     PUMPS_SWITCHES_PORT     PORTD
 #define     PUMPS_SWITCHES_PIN      PIND
@@ -67,8 +74,30 @@
 // maximum of consecutive faults before state an error
 #define FAULT_COUNT_LIMIT           50
 
-// CANBUS DEFINITIONS
-#define SUPPORT_EXTENDED_CANID      0   // 11bits ID
-#define SUPPORT_TIMESTAMPS          0   // timestamp not supported in atmega328p
+// CANBUS DEFINITONS
+// ----------------------------------------------------------------------------
+/* Global settings for building the can-lib and application program.
+ *
+ * The following two #defines must be set identically for the can-lib and
+ * your application program. They control the underlying CAN struct. If the
+ * settings disagree, the underlying CAN struct will be broken, with
+ * unpredictable results.
+ * If can.h detects that any of the #defines is not defined, it will set them
+ * to the default values shown here, so it is in your own interest to have a
+ * consistent setting. Ommiting the #defines in both can-lib and application
+ * program will apply the defaults in a consistent way too.
+ *
+ * Select if you want to use 29 bit identifiers.
+ */
+#define	SUPPORT_EXTENDED_CANID	0
 
-#endif /* ifndef _CONF_H_ */
+/* Select if you want to use timestamps.
+ * Timestamps are sourced from a register internal to the AT90CAN.
+ * Selecting them on any other controller will have no effect, they will
+ * be 0 all the time.
+ */
+#define	SUPPORT_TIMESTAMPS		0
+
+
+
+#endif /* ifndef CONF_H */

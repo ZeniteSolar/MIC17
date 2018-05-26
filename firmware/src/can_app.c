@@ -5,23 +5,21 @@
  */
 inline void can_app_print_msg(can_t *msg)
 {
-	usart_send_string("ID: ");
-	usart_send_uint16(msg->id);
-    usart_send_string(" L: ");
-    usart_send_uint16(msg->length);
-	usart_send_string(". D: ");
+    usart_send_string("ID: ");
+    usart_send_uint16(msg->id);
+    usart_send_string(". D: ");
 
-	for(uint8_t i = 0; i < msg->length; i++){
-	    usart_send_uint16(msg->data[i]);
-	    usart_send_char(' ');
-	}
+    for(uint8_t i = 0; i < msg->length; i++){
+      usart_send_uint16(msg->data[i]);
+      usart_send_char(' ');
+    }
 
-	usart_send_string(". ERR: ");
-	can_error_register_t err = can_read_error_register();
-	usart_send_uint16(err.rx);
-	usart_send_char(' ');
-	usart_send_uint16(err.tx);
-	usart_send_char('\n');
+    usart_send_string(". ERR: ");
+    can_error_register_t err = can_read_error_register();
+    usart_send_uint16(err.rx);
+    usart_send_char(' ');
+    usart_send_uint16(err.tx);
+    usart_send_char('\n');
 }
 
 /**
@@ -74,7 +72,9 @@ inline void can_app_send_state(void)
     msg.data[CAN_STATE_MSG_STATE_BYTE]      = (uint8_t) state_machine;
     msg.data[CAN_STATE_MSG_ERROR_BYTE]      = error_flags.all;
 
+#ifdef CAN_PRINT_MSG
     can_app_print_msg(&msg);
+#endif
     can_send_message(&msg);
 }
 
@@ -88,8 +88,8 @@ inline void can_app_send_motor(void)
     for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
-    msg.data[CAN_MSG_MIC17_MOTOR_D_RAW_BYTE]    = control.motor_D_raw_target;
-    msg.data[CAN_MSG_MIC17_MOTOR_I_RAW_BYTE]    = control.motor_I_raw_target;
+    msg.data[CAN_MSG_MIC17_MOTOR_D_RAW_BYTE]    = control.motor_dutycycle_raw_target;
+    msg.data[CAN_MSG_MIC17_MOTOR_I_RAW_BYTE]    = control.motor_increment_raw_target;
 
     msg.data[CAN_MSG_MIC17_MOTOR_MOTOR_ON_BYTE] |= 
         ((system_flags.motor_on) << CAN_MSG_MIC17_MOTOR_MOTOR_ON_BIT);
@@ -97,13 +97,15 @@ inline void can_app_send_motor(void)
     msg.data[CAN_MSG_MIC17_MOTOR_DMS_BYTE] |= 
         ((system_flags.dms) << CAN_MSG_MIC17_MOTOR_DMS_BIT);
 
+#ifdef CAN_PRINT_MSG
     can_app_print_msg(&msg);
+#endif
     can_send_message(&msg); 
 }
 
 inline void can_app_send_pumps(void)
 {
-    can_t msg;
+    /*can_t msg;
 
     msg.id                                  = CAN_FILTER_MSG_MIC17_PUMPS;
     msg.length                              = CAN_LENGTH_MSG_MIC17_PUMPS;
@@ -118,8 +120,10 @@ inline void can_app_send_pumps(void)
     msg.data[CAN_MSG_MIC17_PUMPS_PUMPS_BYTE]    |= 
         ((system_flags.pump3_on) << CAN_MSG_MIC17_PUMPS_PUMP3_BIT);
 
+#ifdef CAN_PRINT_MSG
     can_app_print_msg(&msg);
-    can_send_message(&msg); 
+#endif
+    can_send_message(&msg); */
 }
 
 inline void can_app_send_mppts(void)
@@ -133,12 +137,14 @@ inline void can_app_send_mppts(void)
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
 
-    msg.data[CAN_MSG_MIC17_MPPTS_POT_BYTE]  = control.mppts_I_raw_target;
+    msg.data[CAN_MSG_MIC17_MPPTS_POT_BYTE]  = control.mppts_power_raw_target;
 
     msg.data[CAN_MSG_MIC17_MPPTS_MPPTS_ON_BYTE] |= 
         ((system_flags.mppt_on) << CAN_MSG_MIC17_MPPTS_MPPTS_ON_BIT);
      
+#ifdef CAN_PRINT_MSG
     can_app_print_msg(&msg);
+#endif
     can_send_message(&msg); 
 }
 
@@ -153,12 +159,20 @@ inline void can_app_send_mcs(void)
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
 
-    msg.data[CAN_MSG_MIC17_MCS_BOAT_ON_BYTE] |= 
-        ((system_flags.boat_on) << CAN_MSG_MIC17_MCS_BOAT_ON_BIT);
+    if(system_flags.boat_on){
+        msg.data[CAN_MSG_MIC17_MCS_BOAT_ON_BYTE] = 0xFF; 
+    }else{
+        msg.data[CAN_MSG_MIC17_MCS_BOAT_ON_BYTE] = 0x00;
+    }
+    //msg.data[CAN_MSG_MIC17_MCS_BOAT_ON_BYTE] |= 
+    //    ((system_flags.boat_on) << CAN_MSG_MIC17_MCS_BOAT_ON_BIT);
      
+#ifdef CAN_PRINT_MSG
     can_app_print_msg(&msg);
+#endif
     can_send_message(&msg); 
 } 
+
 
 /**
  * @brief redirects a specific message extractor to a given message
@@ -169,7 +183,7 @@ inline void can_app_msg_extractors_switch(can_t *msg)
     if(msg->data[CAN_SIGNATURE_BYTE] == CAN_SIGNATURE_MIC17){
         switch(msg->id){
             default:
-                break;
+            break;
         }    
     }
 }
@@ -178,7 +192,7 @@ inline void can_app_msg_extractors_switch(can_t *msg)
  * @brief Manages to receive and extract specific messages from canbus
  */
 inline void check_can(void)
-{
+{  
     if(can_check_message()){
         can_t msg;
         if(can_get_message(&msg)){
@@ -186,4 +200,3 @@ inline void check_can(void)
         }
     }
 }
-

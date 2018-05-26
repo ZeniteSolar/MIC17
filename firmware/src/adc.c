@@ -80,9 +80,9 @@ void adc_init(void)
 {
 
     // configuracao do ADC
-    PORTC   =   0b00000000;                         // pull-up for adcs
-    DDRC    =   0b00000000;                         // all adcs as inputs
-    DIDR0   =   0b00000111;                         // ADC0 to ADC2 as adc (digital disable)
+    //PORTC   =   0b00000000;                         // pull-up for adcs
+    //DDRC    =   0b00000000;                         // all adcs as inputs
+    //DIDR0   =   0b11111111;                         // ADC0 to ADC2 as adc (digital disable)
 
     ADMUX   =   (0 << REFS1)                        // AVcc with external capacitor at AREF pin
             | (1 << REFS0)
@@ -115,6 +115,7 @@ void adc_init(void)
 	OCR0A  =    20;                                 // Valor para igualdade de comparacao A para frequencia de ~1500 Hz
     TIMSK0 |=   (1 << OCIE0A);                      // Ativa a interrupcao na igualdade de comparação do TC0 com OCR0A
 
+    init_buffers();
 }
 
 /**
@@ -123,20 +124,25 @@ void adc_init(void)
 ISR(ADC_vect){
     switch(ADC_CHANNEL){
         case ADC0:
+            VERBOSE_MSG_ADC(usart_send_string("adc0: "));
             CBUF_Push(cbuf_adc0, ADCH); 
             ADC_CHANNEL++;
             break;
         case ADC1:
+            VERBOSE_MSG_ADC(usart_send_string("adc1: "));
             CBUF_Push(cbuf_adc1, ADCH); 
             ADC_CHANNEL++;
             break;
         case ADC2:
+            VERBOSE_MSG_ADC(usart_send_string("adc2: "));
             CBUF_Push(cbuf_adc2, ADCH);
+			ADC_CHANNEL++;
             //break;
         default:
             ADC_CHANNEL = ADC0;             // recycles
             break;
     }        
+    VERBOSE_MSG_ADC(usart_send_uint16(ADCH));
     adc_select_channel(ADC_CHANNEL);
 }
  
